@@ -24,6 +24,7 @@ export PATH="$PATH:$HOME/.npm-global/bin"
 alias lg="lazygit"
 alias vim=nvim
 alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias dlg="lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 
 # --- zoxide (smart cd) ---
 if command -v zoxide &>/dev/null; then
