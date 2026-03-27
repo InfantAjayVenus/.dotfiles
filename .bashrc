@@ -1,8 +1,8 @@
-if command -v zoxide &> /dev/null; then
+if command -v zoxide &>/dev/null; then
   eval "$(zoxide init bash)"
 fi
 
-if command -v zoxide &> /dev/null; then
+if command -v zoxide &>/dev/null; then
   alias cd="zd"
   zd() {
     if [ $# -eq 0 ]; then
@@ -25,6 +25,7 @@ export EDITOR=nvim
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/flutter/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/.npm-global/bin"
 
 export ANDROID_HOME="/home/ajay/Android/Sdk/"
 export CHROME_EXECUTABLE="/usr/bin/helium-browser"
