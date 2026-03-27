@@ -1,3 +1,0 @@
-1|1|Pick clothes for packing
-8|0|Read about Right-to-left Jira strategy
-9|1|swap workspaces in hyprland
