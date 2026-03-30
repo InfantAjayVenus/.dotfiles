@@ -18,6 +18,8 @@ fi
 eval "$(starship init bash)"
 
 export STARSHIP_CONFIG="~/.config/starship.toml"
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 export MANDA_DIR=~/DevSpace/brain-dump
 alias lg="lazygit"
 alias vim=nvim

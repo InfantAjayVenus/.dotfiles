@@ -7,6 +7,10 @@ fi
 
 source /usr/share/cachyos-zsh-config/cachyos-config.zsh
 
+# --- Locale ---
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # --- Environment Variables ---
 export STARSHIP_CONFIG="~/.config/starship.toml"
 export MANDA_DIR=~/DevSpace/brain-dump
