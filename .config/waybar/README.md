@@ -1,15 +1,19 @@
-A simple waybar, with pomodoro timer.
+A simple waybar, with pomodoro timer and todo widget.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/31208bdd-23fc-4d92-bf94-75e92d9df29d" />
 <br><br>
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/9b368093-19f6-4149-8ac6-4daac6a8dd3e" />
 
 <br>
-For pomodoro timer:
-https://github.com/Andeskjerf/waybar-module-pomodoro
+
+## Dependencies
+
+For pomodoro timer: https://github.com/Andeskjerf/waybar-module-pomodoro
+
+> **Note:** The pomodoro subprocess exits on `SIGHUP`/`SIGTERM` (e.g. if waybar is reloaded). Add `--persist` to the exec command in `config.jsonc` to save timer state across restarts.
 
 Required Fonts:
-'SF Pro Text', 'Inter', 'Segoe UI, NotoSans Nerd Font', 'sans-serif'
+'SF Pro Text', 'Inter', 'Segoe UI', 'NotoSans Nerd Font', 'sans-serif'
 
 For arch:
 ```
@@ -25,7 +29,8 @@ fc-cache -fv
 ```
 [windows wallpaper](https://raw.githubusercontent.com/Prateek7071/dotfiles/main/asset/3.jpg)<br>
 
-Waybar modules: <br>
-Left: Workspace, Uptime, CPU monitoring (opens htop when clicked) <br>
-Centre: Clock with day and date <br>
-Right: Pomodoro timer, Bluetooth (opens blueman-manager on click), Wifi (nm connection editor), Volume (pulseaudio pauvcontrols), Brightness and Power
+## Modules
+
+**Left:** CPU monitoring (opens htop on click), Workspaces <br>
+**Centre:** Clock with day and date (IST) <br>
+**Right:** Todo (right-click opens TUI, double-click marks done), Pomodoro timer (click to toggle, right-click to reset), Bluetooth (opens blueman-manager on click), Wifi (opens nm-connection-editor on click), Volume/PulseAudio (opens pavucontrol on click), Brightness, Battery, Power drawer (Shutdown / Reboot / Logout)
