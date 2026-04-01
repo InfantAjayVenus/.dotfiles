@@ -33,6 +33,16 @@ sort_tasks() {
     sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
 }
 
+normalize_pending_priorities() {
+    awk -F'|' '
+    BEGIN { OFS="|"; pending_prio = 0 }
+    $2 == 0 { $1 = ++pending_prio }
+    { print $0 }
+    ' "$TASK_FILE" > "$TEMP_FILE"
+    mv "$TEMP_FILE" "$TASK_FILE"
+    sort_tasks
+}
+
 display_tasks() {
     clear
     echo "--- Your Todo List ---"
@@ -166,6 +176,7 @@ delete_completed_tasks_now() {
     read -rp "Are you sure you want to delete all COMPLETED tasks? (y/n) " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
         sed -i '/|1|/d' "$TASK_FILE"
+        normalize_pending_priorities
         echo "Completed tasks deleted."
     else
         echo "Operation cancelled."

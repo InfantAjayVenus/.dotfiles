@@ -22,6 +22,15 @@ sort_tasks() {
   sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
 }
 
+normalize_pending_priorities() {
+  awk -F'|' '
+    BEGIN { OFS="|"; pending_prio = 0 }
+    $2 == 0 { $1 = ++pending_prio }
+    { print $0 }
+  ' "$TASK_FILE" > "${TASK_FILE}.tmp" && mv "${TASK_FILE}.tmp" "$TASK_FILE"
+  sort_tasks
+}
+
 # --- Daily Auto-Delete Logic ---
 if [[ -n "$SCHEDULED_ACTION" && "$SCHEDULED_ACTION" != "none" ]]; then
   current_ts=$(date +%s)
@@ -32,6 +41,7 @@ if [[ -n "$SCHEDULED_ACTION" && "$SCHEDULED_ACTION" != "none" ]]; then
         >"$TASK_FILE"
       elif [[ "$SCHEDULED_ACTION" == "completed" ]]; then
         sed -i '/|1|/d' "$TASK_FILE"
+        normalize_pending_priorities
       fi
       update_config "LAST_CHECKED_TIMESTAMP" "$current_ts"
     fi
@@ -58,6 +68,7 @@ middle_click)
     >"$TASK_FILE"
   elif [[ "$MIDDLE_CLICK_ACTION" == "completed" ]]; then
     sed -i '/|1|/d' "$TASK_FILE"
+    normalize_pending_priorities
   fi
   exit 0
   ;;
