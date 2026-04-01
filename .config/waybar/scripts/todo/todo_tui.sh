@@ -233,6 +233,8 @@ set_middle_click() {
 }
 
 settings_menu() {
+    local choice
+
     while true; do
         clear
         source "$CONF_FILE" 
@@ -245,7 +247,9 @@ settings_menu() {
         echo "(3) Set daily auto-delete time"
         echo "(4) Configure middle-click action"
         echo "(b)ack to main menu"
-        read -rp "Choose an option: " choice
+        printf "Choose an option: "
+        IFS= read -rsn1 choice
+        echo
 
         case "$choice" in
             1) delete_all_tasks_now ;;
@@ -258,6 +262,32 @@ settings_menu() {
     done
 }
 
+read_main_action() {
+    local action extra_char
+
+    printf "Choose an option: "
+    IFS= read -rsn1 action
+    echo
+
+    case "$action" in
+        e|E|d|D|t|T)
+            while IFS= read -rsn1 -t 0.15 extra_char; do
+                if [[ "$extra_char" =~ ^[0-9]$ ]]; then
+                    task_num+="$extra_char"
+                else
+                    echo "Invalid task number."
+                    sleep 1
+                    action=""
+                    task_num=""
+                    break
+                fi
+            done
+            ;;
+    esac
+
+    choice="$action"
+}
+
 
 # --- Main Application Loop ---
 ensure_config_exists
@@ -265,10 +295,11 @@ sort_tasks
 while true; do
     display_tasks
     echo "(a)dd | (e)dit[#] | (d)elete[#] | (t)oggle[#] | (s)ettings | (q)uit"
-    read -rp "Choose an option: " choice
+    choice=""
+    task_num=""
+    read_main_action
 
-    action="${choice:0:1}"
-    task_num="${choice:1}"
+    action="$choice"
 
     case "$action" in
         a|A) add_task ;;
