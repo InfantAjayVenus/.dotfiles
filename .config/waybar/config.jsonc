@@ -170,10 +170,9 @@
   "custom/pomodoro": {
     "format": "{}",
     "return-type": "json",
-    "exec": "waybar-module-pomodoro --no-work-icons",
-    "on-click": "waybar-module-pomodoro toggle",
-    "on-click-right": "waybar-module-pomodoro reset",
+    "exec": "/home/ajay/.local/bin/waybar-module-pomodoro --no-work-icons",
+    "on-click": "/home/ajay/.local/bin/waybar-module-pomodoro toggle",
+    "on-click-right": "/home/ajay/.local/bin/waybar-module-pomodoro reset",
   },
 
 }
-
