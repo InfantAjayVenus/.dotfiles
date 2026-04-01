@@ -111,6 +111,34 @@ toggle_status() {
     sed -i "${num}s/.*/$new_line/" "$TASK_FILE"
 }
 
+edit_task() {
+    read -rp "Enter task number to edit: " num
+    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
+
+    line_to_edit=$(sed -n "${num}p" "$TASK_FILE")
+    if [[ -z "$line_to_edit" ]]; then echo "Task number not found."; sleep 1; return; fi
+
+    current_prio=$(echo "$line_to_edit" | cut -d'|' -f1)
+    current_status=$(echo "$line_to_edit" | cut -d'|' -f2)
+    current_desc=$(echo "$line_to_edit" | cut -d'|' -f3-)
+
+    read -rp "Enter new description [$current_desc]: " new_desc
+    new_desc="${new_desc:-$current_desc}"
+    if [[ -z "$new_desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
+
+    read -rp "Enter new priority [$current_prio]: " new_prio
+    new_prio="${new_prio:-$current_prio}"
+    if ! [[ "$new_prio" =~ ^[0-9]+$ ]]; then echo "Priority must be a number."; sleep 1; return; fi
+
+    awk -F'|' -v row="$num" -v prio="$new_prio" -v status="$current_status" -v desc="$new_desc" '
+    BEGIN { OFS="|" }
+    NR == row { print prio, status, desc; next }
+    { print $0 }
+    ' "$TASK_FILE" > "$TEMP_FILE"
+
+    sort -n -t'|' -k1 "$TEMP_FILE" -o "$TASK_FILE"
+}
+
 # --- Settings Functions ---
 
 delete_all_tasks_now() {
@@ -226,11 +254,12 @@ ensure_config_exists
 sort_tasks 
 while true; do
     display_tasks
-    echo "(a)dd | (d)elete | (t)oggle status | (s)ettings | (q)uit"
+    echo "(a)dd | (e)dit | (d)elete | (t)oggle status | (s)ettings | (q)uit"
     read -rp "Choose an option: " choice
 
     case "$choice" in
         a|A) add_task ;;
+        e|E) edit_task ;;
         d|D) delete_task ;;
         t|T) toggle_status ;;
         s|S) settings_menu ;;

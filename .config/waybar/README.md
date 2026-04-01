@@ -33,4 +33,4 @@ fc-cache -fv
 
 **Left:** CPU monitoring (opens htop on click), Workspaces <br>
 **Centre:** Clock with day and date (IST) <br>
-**Right:** Todo (right-click opens TUI, double-click marks done), Pomodoro timer (click to toggle, right-click to reset), Bluetooth (opens blueman-manager on click), Wifi (opens nm-connection-editor on click), Volume/PulseAudio (opens pavucontrol on click), Brightness, Battery, Power drawer (Shutdown / Reboot / Logout)
+**Right:** Todo (right-click opens TUI with add/edit/delete controls, double-click marks done), Pomodoro timer (click to toggle, right-click to reset), Bluetooth (opens blueman-manager on click), Wifi (opens nm-connection-editor on click), Volume/PulseAudio (opens pavucontrol on click), Brightness, Battery, Power drawer (Shutdown / Reboot / Logout)
