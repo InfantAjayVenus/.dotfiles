@@ -38,7 +38,7 @@
       "off": "󰂲",
       "connected": "󰂱"
     },
-    "on-click": "blueman-manager",
+    "on-click": "hyprctl dispatch exec \"[float;center;size 900 600] kitty -e bluetui\"",
     "tooltip-format-connected": "{device_enumerate}"
   },
   "clock": {
