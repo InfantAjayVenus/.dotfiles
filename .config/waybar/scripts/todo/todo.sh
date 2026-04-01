@@ -18,6 +18,10 @@ update_config() {
   sed -i "s/^\($key\s*=\s*\).*/\1\"$value\"/" "$CONF_FILE"
 }
 
+sort_tasks() {
+  sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
+}
+
 # --- Daily Auto-Delete Logic ---
 if [[ -n "$SCHEDULED_ACTION" && "$SCHEDULED_ACTION" != "none" ]]; then
   current_ts=$(date +%s)
@@ -41,6 +45,7 @@ mark_done)
   if [[ -n "$current_task_line" ]]; then
     escaped_line=$(sed 's/[&/\]/\\&/g' <<<"$current_task_line")
     sed -i "s/^${escaped_line}$/$(echo "$current_task_line" | sed 's/|0|/|1|/')/" "$TASK_FILE"
+    sort_tasks
   fi
   exit 0
   ;;
@@ -95,7 +100,7 @@ else
     else
       pending_tasks+="$desc\n"
     fi
-  done < <(sort -n -t'|' -k1 "$TASK_FILE")
+  done < <(sort -t'|' -k2,2n -k1,1n "$TASK_FILE")
 
   tooltip+="$pending_tasks"
   tooltip+="$completed_tasks"
@@ -113,4 +118,3 @@ bar_text_json=$(echo "\u00a0\u00a0$bar_text" | sed 's/"/\\"/g')
 tooltip_json=$(echo -e "$tooltip" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
 printf '{"text": "%s", "tooltip": "%s"}\n' "$bar_text_json" "$tooltip_json"
-

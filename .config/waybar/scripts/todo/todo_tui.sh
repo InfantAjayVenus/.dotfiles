@@ -30,7 +30,7 @@ update_config() {
 }
 
 sort_tasks() {
-    sort -n -t'|' -k1 "$TASK_FILE" -o "$TASK_FILE"
+    sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
 }
 
 display_tasks() {
@@ -85,17 +85,24 @@ add_task() {
         cp "$TASK_FILE" "$TEMP_FILE"
         echo "$prio|0|$desc" >> "$TEMP_FILE"
     fi
-    sort -n -t'|' -k1 "$TEMP_FILE" -o "$TASK_FILE"
+    sort -t'|' -k2,2n -k1,1n "$TEMP_FILE" -o "$TASK_FILE"
 }
 
-delete_task() { 
-    read -rp "Enter task number to delete: " num
+delete_task() {
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to delete: " num
+    fi
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
+    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
     sed -i "${num}d" "$TASK_FILE"
 }
 
-toggle_status() { 
-    read -rp "Enter task number to toggle complete/pending: " num
+toggle_status() {
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to toggle complete/pending: " num
+    fi
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
     
     line_to_toggle=$(sed -n "${num}p" "$TASK_FILE")
@@ -112,7 +119,10 @@ toggle_status() {
 }
 
 edit_task() {
-    read -rp "Enter task number to edit: " num
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to edit: " num
+    fi
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
 
     line_to_edit=$(sed -n "${num}p" "$TASK_FILE")
@@ -136,7 +146,7 @@ edit_task() {
     { print $0 }
     ' "$TASK_FILE" > "$TEMP_FILE"
 
-    sort -n -t'|' -k1 "$TEMP_FILE" -o "$TASK_FILE"
+    sort -t'|' -k2,2n -k1,1n "$TEMP_FILE" -o "$TASK_FILE"
 }
 
 # --- Settings Functions ---
@@ -254,16 +264,54 @@ ensure_config_exists
 sort_tasks 
 while true; do
     display_tasks
-    echo "(a)dd | (e)dit | (d)elete | (t)oggle status | (s)ettings | (q)uit"
+    echo "(a)dd | (e)dit[#] | (d)elete[#] | (t)oggle[#] | (s)ettings | (q)uit"
     read -rp "Choose an option: " choice
 
-    case "$choice" in
+    action="${choice:0:1}"
+    task_num="${choice:1}"
+
+    case "$action" in
         a|A) add_task ;;
-        e|E) edit_task ;;
-        d|D) delete_task ;;
-        t|T) toggle_status ;;
-        s|S) settings_menu ;;
-        q|Q) break ;;
+        e|E)
+            if [[ -n "$task_num" && ! "$task_num" =~ ^[0-9]+$ ]]; then
+                echo "Invalid task number."
+                sleep 1
+            else
+                edit_task "$task_num"
+            fi
+            ;;
+        d|D)
+            if [[ -n "$task_num" && ! "$task_num" =~ ^[0-9]+$ ]]; then
+                echo "Invalid task number."
+                sleep 1
+            else
+                delete_task "$task_num"
+            fi
+            ;;
+        t|T)
+            if [[ -n "$task_num" && ! "$task_num" =~ ^[0-9]+$ ]]; then
+                echo "Invalid task number."
+                sleep 1
+            else
+                toggle_status "$task_num"
+            fi
+            ;;
+        s|S)
+            if [[ -n "$task_num" ]]; then
+                echo "Settings does not take a task number."
+                sleep 1
+            else
+                settings_menu
+            fi
+            ;;
+        q|Q)
+            if [[ -n "$task_num" ]]; then
+                echo "Quit does not take a task number."
+                sleep 1
+            else
+                break
+            fi
+            ;;
         *) echo "Invalid option." ; sleep 1 ;;
     esac
     sort_tasks 
