@@ -263,25 +263,25 @@ settings_menu() {
 }
 
 read_main_action() {
-    local action extra_char
+    local action remainder
 
     printf "Choose an option: "
     IFS= read -rsn1 action
-    echo
 
     case "$action" in
         e|E|d|D|t|T)
-            while IFS= read -rsn1 -t 0.15 extra_char; do
-                if [[ "$extra_char" =~ ^[0-9]$ ]]; then
-                    task_num+="$extra_char"
-                else
-                    echo "Invalid task number."
-                    sleep 1
-                    action=""
-                    task_num=""
-                    break
-                fi
-            done
+            printf "%s" "$action"
+            IFS= read -r remainder
+            task_num="${remainder//[[:space:]]/}"
+            if [[ -n "$task_num" && ! "$task_num" =~ ^[0-9]+$ ]]; then
+                echo "Invalid task number."
+                sleep 1
+                action=""
+                task_num=""
+            fi
+            ;;
+        *)
+            echo
             ;;
     esac
 
