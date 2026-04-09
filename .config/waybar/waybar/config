@@ -61,7 +61,7 @@
     "format-disconnected": "󰤠 ",
     "interval": 5,
     "tooltip-format": "{essid} ({signalStrength}%)",
-    "on-click": "nm-connection-editor"
+    "on-click": "hyprctl dispatch exec \"[float;center;size 900 600] kitty -e wlctl\""
 
  },
 
