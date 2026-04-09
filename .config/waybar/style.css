@@ -139,11 +139,12 @@
   background-color: rgba(153, 209, 219, 0.1); /* Brighter highlight */
 }
 
-#custom-todo,#custom-pomodoro {
+#custom-todo,
+#custom-pomodoro {
     background-color: #1a1b26; /* Consistent dark background */
     padding: 0.3rem 0.7rem; /* Consistent padding with other modules (e.g., cpu, uptime) */
     margin: 5px 0px; /* 5px top/bottom margin, 0px left/right (base for individual control) */
-    border-radius: 6px; /* Consistent rounded corners with other individual modules */
+    border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Consistent shadow */
     min-width: 0;
     border: none;
@@ -154,28 +155,73 @@
     font-weight: 600; /* Slightly bolder for the timer, consistent with clock */
 }
 
-/* Positioning and spacing for the custom-pomodoro module */
-#custom-pomodoro {
-    margin-left: 5px; /* Spacing from the previous module (e.g., clock) */
-    margin-right: 5px; /* Spacing before the seamless right bar starts (e.g., bluetooth) */
+#group-productivity {
+    margin-right: 5px;
+    border-radius: 6px;
 }
 
-/* Hover effect for the new pomodoro module (consistent with others + rectangular outline) */
+#custom-pomodoro {
+    margin-left: 0;
+    margin-right: 0;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+#custom-todo {
+    margin-left: 0;
+    margin-right: 0;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+#group-productivity #custom-pomodoro:not(.work):not(.break) {
+    background-color: transparent;
+    box-shadow: none;
+    color: transparent;
+    font-size: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 0;
+    border: none;
+    outline: none;
+    transition: none;
+}
+
+#group-productivity:hover #custom-pomodoro:not(.work):not(.break) {
+    background-color: #1a1b26;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: #babbf1;
+    font-size: 13px;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+}
+
+#group-productivity:hover #custom-todo,
+#custom-pomodoro.work ~ #custom-todo,
+#custom-pomodoro.break ~ #custom-todo {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#custom-todo:hover,
 #custom-pomodoro:hover {
-    background-color: rgb(41, 42, 53); /* Brighter highlight, consistent with other individual modules */
-    color: #c6d0f5; /* Text color change on hover, consistent with other individual modules */
-    outline: 1px solid rgba(255, 255, 255, 0.1); /* Rectangular outline on hover */
-    outline-offset: -1px;
+    background-color: rgb(41, 42, 53);
+    color: #c6d0f5;
 }
 
 /* --- Highlighted state for Pomodoro module when running (work or break) --- */
 #custom-pomodoro.work,
 #custom-pomodoro.break {
-  color: #99d1db; /* Text color consistent with active workspaces button */
-  background-color: rgba(153, 209, 219, 0.1); /* Background color consistent with active workspaces button */
-  box-shadow: inset 0 0 0 1px rgba(153, 209, 219, 0.2); /* Inner shadow for outline effect */
+  color: #e5f3f6;
+  background-color: rgba(153, 209, 219, 0.04);
+  box-shadow: inset 0 0 0 1px rgba(153, 209, 219, 0.12);
   outline: none;
 }
+
 
 /* --- Right Modules (Single, Seamless Bar ) --- */
 #bluetooth,

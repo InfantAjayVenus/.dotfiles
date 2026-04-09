@@ -12,7 +12,7 @@
   "modules-center": ["clock"],
 
   "modules-right": [
-    "custom/pomodoro",
+    "group/group-productivity",
     "group/group-system",
   ],
 
@@ -168,6 +168,26 @@
       "network",
       "bluetooth"
     ]
+  },
+
+  "group/group-productivity": {
+    "orientation": "inherit",
+    "modules": [
+      "custom/pomodoro",
+      "custom/todo"
+    ]
+  },
+
+  "custom/todo":
+  {
+    "format": "\u00a0{}",
+    "exec": "~/.config/waybar/scripts/todo/todo.sh",
+    "on-double-click": "~/.config/waybar/scripts/todo/todo.sh mark_done",
+    "on-click-right": "~/.config/waybar/scripts/todo/todo.sh open_tui",
+    "on-click-middle": "~/.config/waybar/scripts/todo/todo.sh middle_click",
+    "return-type": "json",
+    "interval": 5,
+    "tooltip": true
   },
   
   "custom/lock": {

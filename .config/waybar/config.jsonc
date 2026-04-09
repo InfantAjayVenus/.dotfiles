@@ -10,8 +10,7 @@
   "modules-center": ["clock"],
 
   "modules-right": [
-    "custom/todo",
-    "custom/pomodoro",
+    "group/group-productivity",
     "group/group-system",
     "group/group-power"
   ],
@@ -107,6 +106,14 @@
       "memory",
       "custom/netspeed",
       "custom/coretemps"
+    ]
+  },
+
+  "group/group-productivity": {
+    "orientation": "inherit",
+    "modules": [
+      "custom/pomodoro",
+      "custom/todo"
     ]
   },
 
