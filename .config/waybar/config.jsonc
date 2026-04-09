@@ -3,9 +3,7 @@
   "position": "top",
   "spacing" : 0,
   "modules-left": [
-    "cpu",
-    "memory",
-    "custom/coretemps",
+    "group/group-stats",
     "hyprland/workspaces"
   ],
 
@@ -67,10 +65,16 @@
 
   },
 
-  "cpu": {
+  "cpu#detail": {
     "interval": 1,
-    "format": "  {icon0}{icon1}{icon2}{icon3} {usage:>2}%",
+    "format": "{icon0}{icon1}{icon2}{icon3}",
     "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    "on-click": "ghostty -e htop"
+  },
+
+  "cpu#summary": {
+    "interval": 1,
+    "format": " {usage:>2}%",
     "on-click": "ghostty -e htop"
   },
 
@@ -82,9 +86,24 @@
 
   "custom/coretemps": {
     "interval": 5,
-    "exec": "$HOME/.config/waybar/scripts/coretemps.sh",
+    "exec": "bash $HOME/.config/waybar/scripts/coretemps.sh",
     "return-type": "json",
     "tooltip": true
+  },
+
+  "group/group-stats": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "stats-detail",
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "cpu#summary",
+      "cpu#detail",
+      "memory",
+      "custom/coretemps"
+    ]
   },
 
   "custom/uptime": {
