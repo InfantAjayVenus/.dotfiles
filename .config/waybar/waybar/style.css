@@ -183,7 +183,8 @@
 #backlight,
 #network,
 #custom-lock,
-#battery {
+#battery,
+#group-system {
   background-color: #1a1b26;
   padding: 0.3rem 0.7rem;
   margin: 5px 0px; 
@@ -199,7 +200,8 @@
 #backlight:hover,
 #network:hover,
 #custom-lock:hover,
-#battery:hover {
+#battery:hover,
+#group-system:hover {
   background-color: rgb(41, 42, 53);
 }
 
@@ -209,10 +211,35 @@
   border-bottom-left-radius: 6px;
 }
 
-#battery {
+#group-system {
+  margin-right: 7px;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-  margin-right: 7px;
+}
+
+#group-system #battery,
+#group-system #backlight,
+#group-system #pulseaudio,
+#group-system #network,
+#group-system #bluetooth {
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+}
+
+#group-system #battery {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding-left: 0.5rem;
+}
+
+#group-system #backlight,
+#group-system #pulseaudio,
+#group-system #network,
+#group-system #bluetooth {
+  padding-right: 0.5rem;
 }
 
 #custom-uptime {

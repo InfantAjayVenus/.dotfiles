@@ -12,11 +12,7 @@
   "modules-right": [
     "custom/todo",
     "custom/pomodoro",
-    "bluetooth",
-    "network",
-    "pulseaudio", 
-    "backlight",
-    "battery",
+    "group/group-system",
     "group/group-power"
   ],
 
@@ -152,6 +148,22 @@
     // "format-good": "", // An empty format will hide the module
     // "format-full": "",
     "format-icons": ["", "", "", "", ""]
+  },
+
+  "group/group-system": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "system-detail",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "battery",
+      "backlight",
+      "pulseaudio",
+      "network",
+      "bluetooth"
+    ]
   },
 
   "group/group-power": {
