@@ -16,6 +16,9 @@
   font-weight: 500;
 }
 
+@define-color pill_bg #1a1b26;
+@define-color pill_hover rgb(41, 42, 53);
+
 /* --- Left Modules (Individual, Fully Rounded Blocks - With Horizontal Spacing & Simple Hover) --- */
 #workspaces,
 #custom-uptime,
@@ -144,7 +147,7 @@
 #custom-todo,
 #custom-pomodoro {
     background-color: #1a1b26; /* Consistent dark background */
-    padding: 0.3rem 0.7rem; /* Consistent padding with other modules (e.g., cpu, uptime) */
+    padding: 0.1rem 0.6rem; /* Keep these pills as compact as possible while staying usable */
     margin: 5px 0px; /* 5px top/bottom margin, 0px left/right (base for individual control) */
     border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Consistent shadow */
@@ -158,6 +161,7 @@
 }
 
 #group-productivity {
+    margin: 5px 5px 5px 0;
     margin-right: 5px;
     border-radius: 6px;
 }
@@ -190,7 +194,7 @@
     min-width: 0;
     border: none;
     outline: none;
-    transition: none;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, padding 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 #group-productivity:hover #custom-pomodoro:not(.work):not(.break) {
@@ -239,8 +243,8 @@
 #group-system,
 #group-power {
   background-color: #1a1b26;
-  padding: 0.1rem 0.7rem;
-  margin: 3px 0px; 
+  padding: 0.3rem 0.7rem;
+  margin: 5px 0px;
   border-radius: 0;
   box-shadow: none;
   min-width: 0;
@@ -286,7 +290,7 @@
   box-shadow: none;
   border-radius: 0;
   margin: 0;
-  padding: 0.1rem 0.7rem;
+  padding: 0.3rem 0.7rem;
 }
 
 #group-system #battery {
@@ -474,6 +478,94 @@
   box-shadow: inset 0 0 0 1px rgba(51, 204, 255, 0.18), 0 2px 4px rgba(26, 26, 26, 0.93);
 }
 
+/* --- Unified Pill Rhythm --- */
+#workspaces,
+#custom-uptime,
+#group-stats,
+#clock,
+#custom-clock,
+#group-productivity,
+#custom-todo,
+#custom-pomodoro,
+#bluetooth,
+#pulseaudio,
+#backlight,
+#network,
+#custom-lock,
+#battery,
+#group-system,
+#group-productivity,
+#custom-power,
+#custom-reboot,
+#custom-quit,
+#group-power {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+#custom-uptime,
+#clock,
+#custom-clock,
+#custom-todo,
+#custom-pomodoro,
+#custom-power,
+#custom-reboot,
+#custom-quit,
+#bluetooth,
+#pulseaudio,
+#backlight,
+#network,
+#custom-lock,
+#battery,
+#group-system,
+#group-productivity,
+#group-power {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#group-stats #cpu.summary,
+#group-stats #cpu.detail,
+#group-stats #memory,
+#group-stats #custom-netspeed,
+#group-stats #custom-coretemps,
+#group-system #battery,
+#group-system #backlight,
+#group-system #pulseaudio,
+#group-system #network,
+#group-system #bluetooth {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#group-stats #cpu.summary,
+#group-stats #cpu.detail,
+#group-stats #memory,
+#group-stats #custom-netspeed,
+#group-stats #custom-coretemps,
+#custom-uptime,
+#clock,
+#custom-clock,
+#bluetooth,
+#pulseaudio,
+#backlight,
+#network,
+#custom-lock,
+#battery,
+#group-system,
+#group-productivity,
+#custom-power,
+#custom-reboot,
+#custom-quit,
+#group-power {
+  min-height: 0;
+}
+
+#workspaces {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
 #custom-uptime:hover,
 #cpu:hover,
 #cpu.summary:hover,
@@ -515,4 +607,44 @@ tooltip {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   font-size: 12px;
+}
+
+/* --- Compact Pill Mode --- */
+#custom-uptime,
+#group-stats,
+#custom-clock,
+#group-productivity,
+#group-system,
+#group-power,
+#custom-power,
+#custom-reboot,
+#custom-quit,
+#bluetooth,
+#pulseaudio,
+#backlight,
+#network,
+#custom-lock,
+#battery {
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#group-stats #cpu.summary,
+#group-stats #cpu.detail,
+#group-stats #memory,
+#group-stats #custom-netspeed,
+#group-stats #custom-coretemps,
+#group-productivity #custom-todo,
+#group-productivity #custom-pomodoro,
+#group-system #battery,
+#group-system #backlight,
+#group-system #pulseaudio,
+#group-system #network,
+#group-system #bluetooth {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
