@@ -77,6 +77,11 @@ def format_mods(mods_str):
 
 
 def format_binding(raw_line, variables):
+    inline_comment = ""
+    if "#" in raw_line:
+        raw_line, inline_comment = raw_line.split("#", 1)
+        inline_comment = inline_comment.strip()
+
     # Strip bind type prefix: bind, bindel, bindl, bindm
     m = re.match(r"binde?[lm]?\s*=\s*(.+)", raw_line)
     if not m:
@@ -88,7 +93,6 @@ def format_binding(raw_line, variables):
 
     mods_raw, key, dispatcher, *rest = parts
     params = rest[0] if rest else ""
-
     # Resolve variables in mods and params
     mods_raw = resolve(mods_raw, variables)
     params = resolve(params, variables)
@@ -105,10 +109,7 @@ def format_binding(raw_line, variables):
     label = DISPATCHER_LABELS.get(dispatcher, dispatcher)
 
     if dispatcher == "exec":
-        # Show the command, stripping full paths to keep it readable
-        cmd = re.sub(r"~?/[^\s]*/([^/\s]+)", r"\1", params).strip()
-        # Truncate long commands
-        desc = cmd[:60] + "…" if len(cmd) > 60 else cmd
+        desc = inline_comment or "exec"
     elif dispatcher in ("workspace", "movetoworkspace"):
         desc = f"{label} {params}"
     elif dispatcher == "movefocus":
