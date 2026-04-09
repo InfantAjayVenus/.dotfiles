@@ -52,7 +52,7 @@ esac
 offset="$(read_offset)"
 base_date="$(TZ="${tz}" date '+%Y-%m-15')"
 view_date="$(TZ="${tz}" date -d "${base_date} ${offset} month" '+%Y-%m-15')"
-time_text="$(TZ="${tz}" date '+%H:%M  -  %A, %d')"
+time_text="$(TZ="${tz}" date '+%H:%M  -  %a, %d')"
 month_title="$(TZ="${tz}" date -d "${view_date}" '+%B %Y')"
 cal_text="$(cal "$(TZ="${tz}" date -d "${view_date}" '+%m')" "$(TZ="${tz}" date -d "${view_date}" '+%Y')")"
 
