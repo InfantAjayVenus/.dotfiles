@@ -1,3 +1,5 @@
+> Originally by [Andeskjerf](https://github.com/Andeskjerf/waybar-module-pomodoro). Local modifications: notifications use `notify-send` instead of `notify-rust` for reliable Wayland delivery.
+
 # What is this?
 
 A pomodoro timer for your system bar, intended for Waybar!
@@ -6,21 +8,18 @@ I have not tested other status bars, but hopefully it should also work for other
 
 It follows the same rules as pomodoro: 4 cycles of work and short breaks, followed by a long break.
 
-# How to use
+# Local setup (this install)
 
-- compile & install binary
+The source lives at `~/.config/waybar/scripts/waybar-module-pomodoro/`. Build in place:
 
 ```bash
-git clone https://github.com/Andeskjerf/waybar-module-pomodoro.git
-cd waybar-module-pomodoro
+cd ~/.config/waybar/scripts/waybar-module-pomodoro
 cargo build --release
 ```
 
-Place the file in a folder you have in your $PATH. E.g `/home/user/.local/bin`
+The `target/release/` directory is added to `PATH` in `~/.bashrc` and `~/.zshrc`, so no copy or symlink is needed after building.
 
-```bash
-cp target/release/waybar-module-pomodoro ~/.local/bin
-```
+Notifications use `notify-send` instead of the `notify-rust` crate, which avoids silent D-Bus failures when the binary runs as a Waybar subprocess on Wayland.
 
 - add to `~/.config/waybar/config`
 

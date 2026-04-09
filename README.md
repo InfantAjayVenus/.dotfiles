@@ -105,6 +105,17 @@ sudo pacman -S --needed - < ~/.config/pkglist.txt
 yay -S --needed - < ~/.config/pkglist-aur.txt
 ```
 
+### 4. Build the Waybar Pomodoro module
+
+The pomodoro timer is bundled as Rust source (no pre-built binary is tracked). Build it once after checkout:
+
+```bash
+cd ~/.config/waybar/scripts/waybar-module-pomodoro
+cargo build --release
+```
+
+The shell configs (`.bashrc` / `.zshrc`) already add `target/release` to `$PATH`, so no manual install is needed — the binary is available immediately after the build.
+
 ---
 
 ## What Gets Replicated
@@ -114,7 +125,8 @@ yay -S --needed - < ~/.config/pkglist-aur.txt
 | Hyprland keybindings & config | `hypr/hyprland.conf`                        |
 | Idle & lock screen            | `hypr/hypridle.conf`, `hyprlock.conf`        |
 | Wallpaper                     | `hypr/hyprpaper.conf`                       |
-| Waybar layout & styling       | `waybar/config.jsonc`, `style.css`, scripts/|
+| Waybar layout & styling       | `waybar/config.jsonc`, `style.css`, `scripts/`|
+| Pomodoro timer (source)       | `waybar/scripts/waybar-module-pomodoro/`    |
 | Hyprland scripts              | `hypr/scripts/`, `wallpaper-slideshow.sh`   |
 | Keyboard input config         | input section in `hyprland.conf`            |
 | Terminal (kitty)              | `kitty/kitty.conf`                          |
