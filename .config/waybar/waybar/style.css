@@ -22,6 +22,7 @@
 #cpu,
 #memory,
 #custom-coretemps,
+#custom-netspeed,
 #cpu.summary,
 #cpu.detail {
   background-color: #1a1b26;
@@ -51,6 +52,7 @@
 #cpu.summary:hover,
 #cpu.detail:hover,
 #memory:hover,
+#custom-netspeed:hover,
 #custom-coretemps:hover {
   background-color: rgb(41, 42, 53); /* Brighter highlight */
 }
@@ -73,6 +75,7 @@
 #group-stats #cpu.summary,
 #group-stats #cpu.detail,
 #group-stats #memory,
+#group-stats #custom-netspeed,
 #group-stats #custom-coretemps {
   background-color: transparent;
   box-shadow: none;
@@ -87,6 +90,7 @@
 
 #group-stats #cpu.detail,
 #group-stats #memory,
+#group-stats #custom-netspeed,
 #group-stats #custom-coretemps {
   padding-left: 0.5rem;
   padding-right: 0.7rem;
@@ -221,6 +225,10 @@
 }
 
 #memory {
+  color: #c6d0f5;
+}
+
+#custom-netspeed {
   color: #c6d0f5;
 }
 

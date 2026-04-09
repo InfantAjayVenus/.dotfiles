@@ -95,6 +95,13 @@
     "tooltip": true
   },
 
+  "custom/netspeed": {
+    "interval": 2,
+    "exec": "bash $HOME/.config/waybar/scripts/netspeed.sh",
+    "return-type": "json",
+    "tooltip": true
+  },
+
   "group/group-stats": {
     "orientation": "inherit",
     "drawer": {
@@ -106,6 +113,7 @@
       "cpu#summary",
       "cpu#detail",
       "memory",
+      "custom/netspeed",
       "custom/coretemps"
     ]
   },
