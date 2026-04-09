@@ -4,6 +4,7 @@
   "spacing" : 0,
   "modules-left": [
     "cpu",
+    "memory",
     "hyprland/workspaces"
   ],
 
