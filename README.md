@@ -34,27 +34,25 @@ dotfiles add ~/.config/hypr/scripts/
 dotfiles add ~/.config/hypr/wallpaper-slideshow.sh
 
 # Waybar
-dotfiles add ~/.config/waybar/config.jsonc
-dotfiles add ~/.config/waybar/style.css
-dotfiles add ~/.config/waybar/scripts/
+dotfiles add ~/.config/waybar/
+dotfiles add ~/.config/wlogout/
 
-# Other tools
+# Terminal & UI
 dotfiles add ~/.config/kitty/kitty.conf
 dotfiles add ~/.config/rofi/config.rasi
-dotfiles add ~/.config/dunst/
-dotfiles add ~/.config/starship.toml
-dotfiles add ~/.config/btop/
-dotfiles add ~/.config/nvim/
-dotfiles add ~/.config/lazygit/
-dotfiles add ~/.config/swaylock/
-dotfiles add ~/.config/wlogout/
-dotfiles add ~/.config/workstyle/
+dotfiles add ~/.config/dunst/dunstrc
+dotfiles add ~/.config/swaylock/config
+dotfiles add ~/.config/Kvantum/kvantum.kvconfig
+dotfiles add ~/.config/qt5ct/qt5ct.conf
+dotfiles add ~/.config/qt6ct/qt6ct.conf
+
+# Other tools
+dotfiles add ~/.config/btop/btop.conf
+dotfiles add ~/.config/lazygit/config.yml
+dotfiles add ~/.config/workstyle/config.toml
 
 # Shell
-dotfiles add ~/.bashrc ~/.bash_profile
-
-# Scripts
-dotfiles add ~/.local/bin/
+dotfiles add ~/.bashrc ~/.bash_profile ~/.zshrc ~/.zprofile
 ```
 
 ### 3. Save package lists
@@ -111,21 +109,26 @@ yay -S --needed - < ~/.config/pkglist-aur.txt
 
 ## What Gets Replicated
 
-| Component                     | Source                                   |
-|-------------------------------|------------------------------------------|
-| Hyprland keybindings & config | `hypr/hyprland.conf`                     |
-| Idle & lock screen            | `hypr/hypridle.conf`, `hyprlock.conf`    |
-| Wallpaper                     | `hypr/hyprpaper.conf`                    |
-| Waybar layout & styling       | `waybar/config.jsonc`, `style.css`       |
-| Hyprland & waybar scripts     | `hypr/scripts/`, `waybar/scripts/`       |
-| Keyboard input config         | input section in `hyprland.conf`         |
-| Terminal (kitty)              | `kitty/kitty.conf`                       |
-| App launcher (rofi)           | `rofi/config.rasi`                       |
-| Notifications (dunst)         | `dunst/`                                 |
-| Shell prompt (starship)       | `starship.toml`                          |
-| Shell config                  | `.bashrc`, `.bash_profile`               |
-| Custom scripts                | `.local/bin/`                            |
-| All packages (official + AUR) | `pkglist.txt`, `pkglist-aur.txt`         |
+| Component                     | Source                                      |
+|-------------------------------|---------------------------------------------|
+| Hyprland keybindings & config | `hypr/hyprland.conf`                        |
+| Idle & lock screen            | `hypr/hypridle.conf`, `hyprlock.conf`        |
+| Wallpaper                     | `hypr/hyprpaper.conf`                       |
+| Waybar layout & styling       | `waybar/config.jsonc`, `style.css`, scripts/|
+| Hyprland scripts              | `hypr/scripts/`, `wallpaper-slideshow.sh`   |
+| Keyboard input config         | input section in `hyprland.conf`            |
+| Terminal (kitty)              | `kitty/kitty.conf`                          |
+| App launcher (rofi)           | `rofi/config.rasi`                          |
+| Notifications (dunst)         | `dunst/dunstrc`                             |
+| Lock screen (swaylock)        | `swaylock/config`                           |
+| Qt theme (Kvantum)            | `Kvantum/kvantum.kvconfig`                  |
+| Qt5/Qt6 settings              | `qt5ct/qt5ct.conf`, `qt6ct/qt6ct.conf`      |
+| System monitor (btop)         | `btop/btop.conf`                            |
+| Git UI (lazygit)              | `lazygit/config.yml`                        |
+| Workspace manager (workstyle) | `workstyle/config.toml`                     |
+| Logout screen (wlogout)       | `wlogout/`                                  |
+| Shell config                  | `.bashrc`, `.bash_profile`, `.zshrc`, `.zprofile` |
+| All packages (official + AUR) | `pkglist.txt`, `pkglist-aur.txt`            |
 
 ---
 
