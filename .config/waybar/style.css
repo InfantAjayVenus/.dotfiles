@@ -123,7 +123,8 @@
 }
 
 /* --- Center Module (Individual, Fully Rounded Block - With Simple Hover) --- */
-#clock {
+#clock,
+#custom-clock {
   background-color: #1a1b26;
   padding: 0.3rem 0.7rem;
   margin: 5px 0px;
@@ -135,7 +136,8 @@
 }
 
 /* Simple Hover effect for clock module - BRIGHTER COLOR */
-#clock:hover {
+#clock:hover,
+#custom-clock:hover {
   background-color: rgba(153, 209, 219, 0.1); /* Brighter highlight */
 }
 
@@ -321,7 +323,8 @@
   color: #c6d0f5;
 }
 
-#clock {
+#clock,
+#custom-clock {
   color: #99d1db;
   font-weight: 500;
 }

@@ -7,7 +7,7 @@
     "hyprland/workspaces"
   ],
 
-  "modules-center": ["clock"],
+  "modules-center": ["custom/clock"],
 
   "modules-right": [
     "group/group-productivity",
@@ -43,11 +43,16 @@
     "max-length": 50
   },
 
-  "clock": {
-    "timezone": "Asia/Kolkata",
+  "custom/clock": {
+    "exec": "bash $HOME/.config/waybar/scripts/clock_calendar.sh render",
+    "return-type": "json",
     "tooltip": false,
-    "format": "{:%H:%M:%S  -  %A, %d}",
-    "interval": 1
+    "escape": false,
+    "interval": 30,
+    "on-click": "hyprctl dispatch exec \"[float;center;size 520 320] kitty --title waybar-calendar bash -lc ~/.config/waybar/scripts/calendar_popup.sh\"",
+    "on-scroll-up": "bash $HOME/.config/waybar/scripts/clock_calendar.sh shift_up",
+    "on-scroll-down": "bash $HOME/.config/waybar/scripts/clock_calendar.sh shift_down",
+    "on-click-right": "bash $HOME/.config/waybar/scripts/clock_calendar.sh reset"
   },
 
   "network": {
