@@ -98,29 +98,23 @@ else
     bar_text="✔ All Done!"
   fi
 
-  tooltip="<b><u>Todo List\n</u></b>\n"
-  pending_tasks=""
-  completed_tasks=""
-
-  while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ -z "$line" ]]; then continue; fi
-    status=$(echo "$line" | cut -d'|' -f2)
-    desc=$(echo "$line" | cut -d'|' -f3)
-    if [[ "$status" -eq 1 ]]; then
-      completed_tasks+="<s>$desc</s>\n"
-    else
-      pending_tasks+="$desc\n"
-    fi
-  done < <(sort -t'|' -k2,2n -k1,1n "$TASK_FILE")
-
-  tooltip+="$pending_tasks"
-  tooltip+="$completed_tasks"
-
   if [[ -n "$current_task_line" ]]; then
-    # Always use the full, untruncated text in the tooltip
-    tooltip+="\n<b>Current task:</b> $full_bar_text"
+    tooltip="<b><u>Top 3 Tasks</u></b>\n"
+    count=0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      [[ -z "$line" ]] && continue
+      desc=$(echo "$line" | cut -d'|' -f3)
+      count=$((count + 1))
+      tooltip+="$count. $desc\n"
+      [[ "$count" -ge 3 ]] && break
+    done < <(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1)
+
+    remaining_count=$(grep -c '^[^|]*|0|' "$TASK_FILE")
+    if (( remaining_count > 3 )); then
+      tooltip+="\n<i>+$((remaining_count - 3)) more</i>"
+    fi
   else
-    tooltip+="\n<b>All tasks cleared. Great job!</b>"
+    tooltip="<b>All tasks cleared. Great job!</b>"
   fi
 fi
 
