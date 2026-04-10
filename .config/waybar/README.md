@@ -8,9 +8,9 @@ A simple waybar, with pomodoro timer and todo widget.
 
 ## Dependencies
 
-For pomodoro timer: https://github.com/Andeskjerf/waybar-module-pomodoro
-
-> **Note:** The pomodoro subprocess exits on `SIGHUP`/`SIGTERM` (e.g. if waybar is reloaded). Add `--persist` to the exec command in `config.jsonc` to save timer state across restarts.
+Pomodoro timer is implemented locally in `~/.config/waybar/scripts/pomodoro.py` and only requires:
+- `python3`
+- `notify-send`
 
 Required Fonts:
 'SF Pro Text', 'Inter', 'Segoe UI', 'NotoSans Nerd Font', 'sans-serif'
