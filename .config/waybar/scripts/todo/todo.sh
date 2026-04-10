@@ -77,26 +77,14 @@ esac
 # --- Generate Waybar JSON Output ---
 current_task_line=$(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1 | head -n 1)
 tooltip=""
-full_bar_text="" # Variable to hold the full task description
+pending_count=$(grep -c '^[^|]*|0|' "$TASK_FILE" 2>/dev/null || echo 0)
+total_count=$(grep -c '^[^|]*|' "$TASK_FILE" 2>/dev/null || echo 0)
 
 if [[ ! -s "$TASK_FILE" ]]; then
-  bar_text="Add a task!"
+  bar_text="0/0"
   tooltip="Right-click to add a new task"
 else
-  if [[ -n "$current_task_line" ]]; then
-    full_bar_text=$(echo "$current_task_line" | cut -d'|' -f3)
-
-    # Truncation Logic
-    if ((${#full_bar_text} > 20)); then
-      # Truncate to 17 chars and add "..."
-      bar_text="$(echo "$full_bar_text" | cut -c1-17)..."
-    else
-      # Use full text if it's 20 chars or less
-      bar_text="$full_bar_text"
-    fi
-  else
-    bar_text="✔ All Done!"
-  fi
+  bar_text="${pending_count}/${total_count}"
 
   if [[ -n "$current_task_line" ]]; then
     tooltip="<b><u>Top 3 Tasks</u></b>\n"
@@ -109,9 +97,8 @@ else
       [[ "$count" -ge 3 ]] && break
     done < <(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1)
 
-    remaining_count=$(grep -c '^[^|]*|0|' "$TASK_FILE")
-    if (( remaining_count > 3 )); then
-      tooltip+="\n<i>+$((remaining_count - 3)) more</i>"
+    if (( pending_count > 3 )); then
+      tooltip+="\n<i>+$((pending_count - 3)) more</i>"
     fi
   else
     tooltip="<b>All tasks cleared. Great job!</b>"
