@@ -28,7 +28,6 @@ export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/flutter/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/.npm-global/bin"
-export PATH="$PATH:$HOME/.config/waybar/scripts/waybar-module-pomodoro/target/release"
 
 export ANDROID_HOME="/home/ajay/Android/Sdk/"
 export CHROME_EXECUTABLE="/usr/bin/helium-browser"

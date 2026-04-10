@@ -23,7 +23,6 @@ export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/flutter/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/.npm-global/bin"
-export PATH="$PATH:$HOME/.config/waybar/scripts/waybar-module-pomodoro/target/release"
 
 # --- Aliases ---
 alias lg="lazygit"
