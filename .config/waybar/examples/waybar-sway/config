@@ -136,8 +136,8 @@
   "custom/pomodoro": {
     "format": "{}",
     "return-type": "json",
-    "exec": "waybar-module-pomodoro --no-work-icons",
-    "on-click": "waybar-module-pomodoro toggle",
-    "on-click-right": "waybar-module-pomodoro reset"
+    "exec": "~/.config/waybar/scripts/pomodoro.py --no-work-icons",
+    "on-click": "~/.config/waybar/scripts/pomodoro.py toggle",
+    "on-click-right": "~/.config/waybar/scripts/pomodoro.py reset"
   }
 }
