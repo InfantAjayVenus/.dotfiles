@@ -105,17 +105,17 @@ sudo pacman -S --needed - < ~/.config/pkglist.txt
 yay -S --needed - < ~/.config/pkglist-aur.txt
 ```
 
-### 4. Pomodoro module requirements
+### 4. Pomodoro script setup
 
-The pomodoro timer now runs directly from the tracked Python script at `~/.config/waybar/scripts/pomodoro.py`.
+The pomodoro timer is a tracked executable Python script at `~/.config/waybar/scripts/pomodoro.py`.
 
-No build step is needed after checkout. Just make sure these runtime dependencies are installed:
+There is no build step after checkout. Install the runtime dependencies and Waybar can run it directly:
 
 ```bash
-sudo pacman -S --needed python notify-send
+sudo pacman -S --needed python libnotify
 ```
 
-Waybar uses the script directly:
+Waybar is configured to call the script directly:
 
 ```json
 "custom/pomodoro": {
