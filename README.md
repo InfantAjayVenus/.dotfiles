@@ -105,16 +105,27 @@ sudo pacman -S --needed - < ~/.config/pkglist.txt
 yay -S --needed - < ~/.config/pkglist-aur.txt
 ```
 
-### 4. Build the Waybar Pomodoro module
+### 4. Pomodoro module requirements
 
-The pomodoro timer is bundled as Rust source (no pre-built binary is tracked). Build it once after checkout:
+The pomodoro timer now runs directly from the tracked Python script at `~/.config/waybar/scripts/pomodoro.py`.
+
+No build step is needed after checkout. Just make sure these runtime dependencies are installed:
 
 ```bash
-cd ~/.config/waybar/scripts/waybar-module-pomodoro
-cargo build --release
+sudo pacman -S --needed python notify-send
 ```
 
-The shell configs (`.bashrc` / `.zshrc`) already add `target/release` to `$PATH`, so no manual install is needed — the binary is available immediately after the build.
+Waybar uses the script directly:
+
+```json
+"custom/pomodoro": {
+  "format": "{}",
+  "return-type": "json",
+  "exec": "~/.config/waybar/scripts/pomodoro.py --no-work-icons",
+  "on-click": "~/.config/waybar/scripts/pomodoro.py toggle",
+  "on-click-right": "~/.config/waybar/scripts/pomodoro.py reset"
+}
+```
 
 ---
 
@@ -126,7 +137,7 @@ The shell configs (`.bashrc` / `.zshrc`) already add `target/release` to `$PATH`
 | Idle & lock screen            | `hypr/hypridle.conf`, `hyprlock.conf`        |
 | Wallpaper                     | `hypr/hyprpaper.conf`                       |
 | Waybar layout & styling       | `waybar/config.jsonc`, `style.css`, `scripts/`|
-| Pomodoro timer (source)       | `waybar/scripts/waybar-module-pomodoro/`    |
+| Pomodoro timer                | `waybar/scripts/pomodoro.py`                |
 | Hyprland scripts              | `hypr/scripts/`, `wallpaper-slideshow.sh`   |
 | Keyboard input config         | input section in `hyprland.conf`            |
 | Terminal (kitty)              | `kitty/kitty.conf`                          |
