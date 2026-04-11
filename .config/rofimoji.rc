@@ -1,0 +1,5 @@
+action = copy
+selector = rofi
+clipboarder = wl-copy
+prompt = Emoji
+max-recent = 10
