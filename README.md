@@ -127,6 +127,37 @@ Waybar is configured to call the script directly:
 }
 ```
 
+### 5. SDDM theme setup
+
+The SDDM login screen theme is tracked under `~/.config/sddm/`, but SDDM reads its active configuration from system paths under `/etc` and `/usr/share/sddm/themes`.
+
+After checking out the dotfiles and installing packages, deploy the tracked SDDM config and `last-of-us` theme:
+
+```bash
+~/.config/sddm/install.sh
+```
+
+The script installs:
+
+```text
+/etc/sddm.conf.d/10-theme.conf
+/etc/sddm.conf.d/20-session.conf
+/usr/share/sddm/themes/last-of-us/
+```
+
+It also normalizes the installed theme permissions so SDDM can read the theme before user login. The theme uses Qt6 multimedia, so keep these packages installed:
+
+```bash
+sudo pacman -S --needed sddm qt6-5compat qt6-multimedia qt6-declarative
+```
+
+The active theme is configured as:
+
+```ini
+[Theme]
+Current=last-of-us
+```
+
 ---
 
 ## What Gets Replicated
@@ -150,6 +181,7 @@ Waybar is configured to call the script directly:
 | Git UI (lazygit)              | `lazygit/config.yml`                        |
 | Workspace manager (workstyle) | `workstyle/config.toml`                     |
 | Logout screen (wlogout)       | `wlogout/`                                  |
+| SDDM login theme              | `sddm/`                                     |
 | Shell config                  | `.bashrc`, `.bash_profile`, `.zshrc`, `.zprofile` |
 | All packages (official + AUR) | `pkglist.txt`, `pkglist-aur.txt`            |
 
