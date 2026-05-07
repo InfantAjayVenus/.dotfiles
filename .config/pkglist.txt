@@ -12,7 +12,6 @@ base
 base-devel
 bash-completion
 bind
-blender
 bluetui
 bluez
 bluez-hid2hci
@@ -91,6 +90,7 @@ gst-plugins-ugly
 gum
 hdparm
 helium-browser-bin
+heroic-games-launcher-bin
 hwdetect
 hwinfo
 hypridle
@@ -191,6 +191,7 @@ pnpm
 polkit-kde-agent
 poppler-glib
 power-profiles-daemon
+protonup-qt
 pv
 python
 python-defusedxml
@@ -203,6 +204,7 @@ rebuild-detector
 reflector
 ripgrep
 rofi
+rofimoji
 rsync
 rust
 s-nail
@@ -211,6 +213,7 @@ sddm
 sg3_utils
 shelly
 shotwell
+slides
 slurp
 smartmontools
 snapper
@@ -219,7 +222,10 @@ starship
 steam
 sudo
 sysfsutils
+telegram-desktop
 texinfo
+tlp
+tlpui
 trash-cli
 tree-sitter-cli
 try

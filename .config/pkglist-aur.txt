@@ -4,6 +4,7 @@ frogmouth
 perplexity
 pinta
 qdirstat-bin
+slides
 try
 wlctl-git
 workstyle-git
