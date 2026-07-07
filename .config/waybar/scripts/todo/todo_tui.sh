@@ -1,141 +1,39 @@
 #!/bin/bash
 
-# Directory and file paths
-TODO_DIR="$HOME/.config/waybar/scripts/todo"
-TASK_FILE="$TODO_DIR/tasks.txt"
-CONF_FILE="$TODO_DIR/todo.conf"
-TEMP_FILE=$(mktemp)
-trap 'rm -f "$TEMP_FILE"' EXIT
+# Source the shared operations library
+source "$(dirname "$0")/todo_lib.sh"
 
-ensure_config_exists() {
-    if [[ ! -f "$CONF_FILE" ]]; then
-        cat > "$CONF_FILE" << EOF
-# Configuration for the todo script
-SCHEDULED_TIME="none"
-SCHEDULED_ACTION="none"
-LAST_CHECKED_TIMESTAMP="0"
-MIDDLE_CLICK_ACTION="none"
-EOF
-    fi
-}
-
-update_config() {
-    local key="$1"
-    local value="$2"
-    if grep -q "^$key=" "$CONF_FILE"; then
-        sed -i "s/^\($key\s*=\s*\).*/\1\"$value\"/" "$CONF_FILE"
+# Interactive mode: ensure new window open if stdin is not a terminal
+if [[ -z "$TODO_TUI_INTERACTIVE_WINDOW" ]] && ! [[ -t 0 ]]; then
+    export TODO_TUI_INTERACTIVE_WINDOW=1
+    if command -v kitty >/dev/null 2>&1; then
+        kitty -e "$0" &
+    elif command -v alacritty >/dev/null 2>&1; then
+        alacritty -e "$0" &
+    elif command -v foot >/dev/null 2>&1; then
+        foot -e "$0" &
     else
-        echo "$key=\"$value\"" >> "$CONF_FILE"
+        kitty -e "$0" &
     fi
-}
+    exit 0
+fi
 
-sort_tasks() {
-    sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
-}
-
-normalize_pending_priorities() {
-    awk -F'|' '
-    BEGIN { OFS="|"; pending_prio = 0 }
-    $2 == 0 { $1 = ++pending_prio }
-    { print $0 }
-    ' "$TASK_FILE" > "$TEMP_FILE"
-    mv "$TEMP_FILE" "$TASK_FILE"
-    sort_tasks
-}
-
+# TUI display helper
 display_tasks() {
     clear
     echo "--- Your Todo List ---"
-    if [[ ! -s "$TASK_FILE" ]]; then
+    if is_task_file_empty; then
         echo "No tasks yet!"
     else
-        awk -F'|' '{
+        get_raw_tasks | awk -F'|' '{
             if ($2 == 1) {
                 printf "\033[90m%d. [✔] %s (Prio: %d)\033[0m\n", NR, $3, $1
             } else {
                 printf "%d. [ ] %s (Prio: %d)\n", NR, $3, $1
             }
-        }' "$TASK_FILE"
+        }'
     fi
     echo "----------------------"
-}
-
-# --- Core Logic Functions (Atomic, Non-Interactive) ---
-add_task() { 
-    local desc="$1"
-    local prio="$2"
-    local choice="$3"
-
-    local conflict_line
-    conflict_line=$(grep "^${prio}|" "$TASK_FILE")
-
-    if [[ -n "$conflict_line" ]]; then
-        awk -F'|' -v new_prio="$prio" -v new_desc="$desc" -v choice="$choice" '
-        BEGIN { OFS="|" }
-        {
-            current_prio = $1
-            if (choice ~ /^[Yy]/) {
-                if (current_prio >= new_prio) { $1 = current_prio + 1 }
-            } else {
-                if (current_prio > new_prio) { $1 = current_prio + 1 }
-            }
-            print $0
-        }' "$TASK_FILE" > "$TEMP_FILE"
-
-        if [[ "$choice" =~ ^[Yy]$ ]]; then
-            echo "$prio|0|$desc" >> "$TEMP_FILE"
-        else
-            echo "$((prio + 1))|0|$desc" >> "$TEMP_FILE"
-        fi
-    else
-        cp "$TASK_FILE" "$TEMP_FILE"
-        echo "$prio|0|$desc" >> "$TEMP_FILE"
-    fi
-    sort -t'|' -k2,2n -k1,1n "$TEMP_FILE" -o "$TASK_FILE"
-}
-
-delete_task() {
-    local num="$1"
-    sed -i "${num}d" "$TASK_FILE"
-}
-
-toggle_status() {
-    local num="$1"
-    local line_to_toggle
-    line_to_toggle=$(sed -n "${num}p" "$TASK_FILE")
-    local status
-    status=$(echo "$line_to_toggle" | cut -d'|' -f2)
-    local new_line
-    if [[ "$status" -eq 0 ]]; then
-        new_line=$(echo "$line_to_toggle" | sed 's/|0|/|1|/')
-    else
-        new_line=$(echo "$line_to_toggle" | sed 's/|1|/|0|/')
-    fi
-    sed -i "${num}s/.*/$new_line/" "$TASK_FILE"
-}
-
-edit_task() {
-    local num="$1"
-    local new_prio="$2"
-    local new_desc="$3"
-    local current_status="$4"
-
-    awk -F'|' -v row="$num" -v prio="$new_prio" -v status="$current_status" -v desc="$new_desc" '
-    BEGIN { OFS="|" }
-    NR == row { print prio, status, desc; next }
-    { print $0 }
-    ' "$TASK_FILE" > "$TEMP_FILE"
-
-    sort -t'|' -k2,2n -k1,1n "$TEMP_FILE" -o "$TASK_FILE"
-}
-
-delete_all_tasks() {
-    > "$TASK_FILE"
-}
-
-delete_completed_tasks() {
-    sed -i '/|1|/d' "$TASK_FILE"
-    normalize_pending_priorities
 }
 
 # --- Interactive Wrappers & Interactivity Functions ---
@@ -144,17 +42,9 @@ add_task_interactive() {
     read -rp "Enter new task description: " desc
     if [[ -z "$desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
 
-    created_date=$(date +"@%a, %-d-%b-%y")
-    desc="$desc $created_date"
-
     read -rp "Enter priority (number): " prio
     if [[ -z "$prio" ]]; then
-        last_incomplete_prio=$(awk -F'|' '$2 == 0 {prio=$1} END {print prio}' "$TASK_FILE")
-        if [[ -z "$last_incomplete_prio" ]]; then
-            prio=1
-        else
-            prio=$((last_incomplete_prio + 1))
-        fi
+        prio=$(get_next_priority)
     elif ! [[ "$prio" =~ ^[0-9]+$ ]]; then
         echo "Priority must be a number."
         sleep 1
@@ -163,7 +53,7 @@ add_task_interactive() {
 
     local choice=""
     local conflict_line
-    conflict_line=$(grep "^${prio}|" "$TASK_FILE")
+    conflict_line=$(get_conflict_line "$prio")
 
     if [[ -n "$conflict_line" ]]; then
         conflict_desc=$(echo "$conflict_line" | cut -d'|' -f3)
@@ -179,7 +69,7 @@ delete_task_interactive() {
         read -rp "Enter task number to delete: " num
     fi
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
-    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
+    if ! task_exists "$num"; then echo "Task number not found."; sleep 1; return; fi
     delete_task "$num"
 }
 
@@ -189,7 +79,7 @@ toggle_status_interactive() {
         read -rp "Enter task number to toggle complete/pending: " num
     fi
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
-    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
+    if ! task_exists "$num"; then echo "Task number not found."; sleep 1; return; fi
     toggle_status "$num"
 }
 
@@ -201,7 +91,7 @@ edit_task_interactive() {
     if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
 
     local line_to_edit
-    line_to_edit=$(sed -n "${num}p" "$TASK_FILE")
+    line_to_edit=$(get_task_line "$num")
     if [[ -z "$line_to_edit" ]]; then echo "Task number not found."; sleep 1; return; fi
 
     local current_prio current_status current_desc
@@ -209,9 +99,18 @@ edit_task_interactive() {
     current_status=$(echo "$line_to_edit" | cut -d'|' -f2)
     current_desc=$(echo "$line_to_edit" | cut -d'|' -f3-)
 
+    local display_desc="$current_desc"
+    local creation_date=""
+    if [[ "$current_desc" =~ @[A-Za-z]{3},[[:space:]][0-9]{1,2}-[A-Za-z]{3}-[0-9]{2} ]]; then
+        creation_date="${BASH_REMATCH[0]}"
+        display_desc="${current_desc% "$creation_date"}"
+        display_desc="${display_desc%"$creation_date"}"
+        display_desc=$(echo "$display_desc" | sed 's/[[:space:]]*$//')
+    fi
+
     local new_desc
-    read -rp "Enter new description [$current_desc]: " new_desc
-    new_desc="${new_desc:-$current_desc}"
+    read -rp "Enter new description [$display_desc]: " new_desc
+    new_desc="${new_desc:-$display_desc}"
     if [[ -z "$new_desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
 
     local new_prio
@@ -358,7 +257,6 @@ read_main_action() {
 
     choice="$action"
 }
-
 
 # --- Main Application Loop ---
 ensure_config_exists

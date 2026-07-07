@@ -2,10 +2,9 @@
 
 # Directory and file paths
 TODO_DIR="$HOME/.config/waybar/scripts/todo"
-TASK_FILE="$TODO_DIR/tasks.txt"
 CONF_FILE="$TODO_DIR/todo.conf"
 TUI_SCRIPT="$TODO_DIR/todo_tui.sh"
-touch "$TASK_FILE"
+CLI_SCRIPT="$TODO_DIR/todo_cli.sh"
 touch "$CONF_FILE"
 
 # Source the configuration file
@@ -18,19 +17,6 @@ update_config() {
   sed -i "s/^\($key\s*=\s*\).*/\1\"$value\"/" "$CONF_FILE"
 }
 
-sort_tasks() {
-  sort -t'|' -k2,2n -k1,1n "$TASK_FILE" -o "$TASK_FILE"
-}
-
-normalize_pending_priorities() {
-  awk -F'|' '
-    BEGIN { OFS="|"; pending_prio = 0 }
-    $2 == 0 { $1 = ++pending_prio }
-    { print $0 }
-  ' "$TASK_FILE" > "${TASK_FILE}.tmp" && mv "${TASK_FILE}.tmp" "$TASK_FILE"
-  sort_tasks
-}
-
 # --- Daily Auto-Delete Logic ---
 if [[ -n "$SCHEDULED_ACTION" && "$SCHEDULED_ACTION" != "none" ]]; then
   current_ts=$(date +%s)
@@ -38,10 +24,9 @@ if [[ -n "$SCHEDULED_ACTION" && "$SCHEDULED_ACTION" != "none" ]]; then
   if [[ -n "$scheduled_ts_today" ]]; then
     if ((current_ts > scheduled_ts_today)) && ((LAST_CHECKED_TIMESTAMP < scheduled_ts_today)); then
       if [[ "$SCHEDULED_ACTION" == "all" ]]; then
-        >"$TASK_FILE"
+        "$CLI_SCRIPT" delete-all
       elif [[ "$SCHEDULED_ACTION" == "completed" ]]; then
-        sed -i '/|1|/d' "$TASK_FILE"
-        normalize_pending_priorities
+        "$CLI_SCRIPT" delete-completed
       fi
       update_config "LAST_CHECKED_TIMESTAMP" "$current_ts"
     fi
@@ -51,11 +36,9 @@ fi
 # --- Handle Click Actions ---
 case "$1" in
 mark_done)
-  current_task_line=$(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1 | head -n 1)
-  if [[ -n "$current_task_line" ]]; then
-    escaped_line=$(sed 's/[&/\]/\\&/g' <<<"$current_task_line")
-    sed -i "s/^${escaped_line}$/$(echo "$current_task_line" | sed 's/|0|/|1|/')/" "$TASK_FILE"
-    sort_tasks
+  idx=$("$CLI_SCRIPT" get-highest-priority)
+  if [[ "$idx" -ne -1 ]]; then
+    "$CLI_SCRIPT" toggle "$idx"
   fi
   exit 0
   ;;
@@ -65,22 +48,22 @@ open_tui)
   ;;
 middle_click)
   if [[ "$MIDDLE_CLICK_ACTION" == "all" ]]; then
-    >"$TASK_FILE"
+    "$CLI_SCRIPT" delete-all
   elif [[ "$MIDDLE_CLICK_ACTION" == "completed" ]]; then
-    sed -i '/|1|/d' "$TASK_FILE"
-    normalize_pending_priorities
+    "$CLI_SCRIPT" delete-completed
   fi
   exit 0
   ;;
 esac
 
 # --- Generate Waybar JSON Output ---
-current_task_line=$(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1 | head -n 1)
+raw_tasks=$("$CLI_SCRIPT" get-raw)
+current_task_line=$(grep '^[^|]*|0|' <<< "$raw_tasks" | sort -n -t'|' -k1 | head -n 1)
 tooltip=""
-pending_count=$(grep -c '^[^|]*|0|' "$TASK_FILE" 2>/dev/null || echo 0)
-total_count=$(grep -c '^[^|]*|' "$TASK_FILE" 2>/dev/null || echo 0)
+pending_count=$(grep -c '^[^|]*|0|' <<< "$raw_tasks" 2>/dev/null || echo 0)
+total_count=$(grep -c '^[^|]*|' <<< "$raw_tasks" 2>/dev/null || echo 0)
 
-if [[ ! -s "$TASK_FILE" ]]; then
+if [[ -z "$raw_tasks" ]]; then
   bar_text="0/0"
   tooltip="Right-click to add a new task"
 else
@@ -95,7 +78,7 @@ else
       count=$((count + 1))
       tooltip+="$count. $desc\n"
       [[ "$count" -ge 3 ]] && break
-    done < <(grep '^[^|]*|0|' "$TASK_FILE" | sort -n -t'|' -k1)
+    done < <(grep '^[^|]*|0|' <<< "$raw_tasks" | sort -n -t'|' -k1)
 
     if (( pending_count > 3 )); then
       tooltip+="\n<i>+$((pending_count - 3)) more</i>"
