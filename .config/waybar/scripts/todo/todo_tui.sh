@@ -60,34 +60,16 @@ display_tasks() {
     echo "----------------------"
 }
 
-# --- Core Logic Functions ---
+# --- Core Logic Functions (Atomic, Non-Interactive) ---
 add_task() { 
-    read -rp "Enter new task description: " desc
-    if [[ -z "$desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
+    local desc="$1"
+    local prio="$2"
+    local choice="$3"
 
-    created_date=$(date +"@%a, %-d-%b-%y")
-    desc="$desc $created_date"
-
-    read -rp "Enter priority (number): " prio
-    if [[ -z "$prio" ]]; then
-        last_incomplete_prio=$(awk -F'|' '$2 == 0 {prio=$1} END {print prio}' "$TASK_FILE")
-        if [[ -z "$last_incomplete_prio" ]]; then
-            prio=1
-        else
-            prio=$((last_incomplete_prio + 1))
-        fi
-    elif ! [[ "$prio" =~ ^[0-9]+$ ]]; then
-        echo "Priority must be a number."
-        sleep 1
-        return
-    fi
-
+    local conflict_line
     conflict_line=$(grep "^${prio}|" "$TASK_FILE")
 
     if [[ -n "$conflict_line" ]]; then
-        conflict_desc=$(echo "$conflict_line" | cut -d'|' -f3)
-        read -rp "Task '$conflict_desc' has priority $prio. Make '$desc' more prior? (y/n) " choice
-        
         awk -F'|' -v new_prio="$prio" -v new_desc="$desc" -v choice="$choice" '
         BEGIN { OFS="|" }
         {
@@ -113,27 +95,17 @@ add_task() {
 }
 
 delete_task() {
-    local num="${1:-}"
-    if [[ -z "$num" ]]; then
-        read -rp "Enter task number to delete: " num
-    fi
-    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
-    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
+    local num="$1"
     sed -i "${num}d" "$TASK_FILE"
 }
 
 toggle_status() {
-    local num="${1:-}"
-    if [[ -z "$num" ]]; then
-        read -rp "Enter task number to toggle complete/pending: " num
-    fi
-    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
-    
+    local num="$1"
+    local line_to_toggle
     line_to_toggle=$(sed -n "${num}p" "$TASK_FILE")
-    if [[ -z "$line_to_toggle" ]]; then echo "Task number not found."; sleep 1; return; fi
-    
+    local status
     status=$(echo "$line_to_toggle" | cut -d'|' -f2)
-    
+    local new_line
     if [[ "$status" -eq 0 ]]; then
         new_line=$(echo "$line_to_toggle" | sed 's/|0|/|1|/')
     else
@@ -143,26 +115,10 @@ toggle_status() {
 }
 
 edit_task() {
-    local num="${1:-}"
-    if [[ -z "$num" ]]; then
-        read -rp "Enter task number to edit: " num
-    fi
-    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
-
-    line_to_edit=$(sed -n "${num}p" "$TASK_FILE")
-    if [[ -z "$line_to_edit" ]]; then echo "Task number not found."; sleep 1; return; fi
-
-    current_prio=$(echo "$line_to_edit" | cut -d'|' -f1)
-    current_status=$(echo "$line_to_edit" | cut -d'|' -f2)
-    current_desc=$(echo "$line_to_edit" | cut -d'|' -f3-)
-
-    read -rp "Enter new description [$current_desc]: " new_desc
-    new_desc="${new_desc:-$current_desc}"
-    if [[ -z "$new_desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
-
-    read -rp "Enter new priority [$current_prio]: " new_prio
-    new_prio="${new_prio:-$current_prio}"
-    if ! [[ "$new_prio" =~ ^[0-9]+$ ]]; then echo "Priority must be a number."; sleep 1; return; fi
+    local num="$1"
+    local new_prio="$2"
+    local new_desc="$3"
+    local current_status="$4"
 
     awk -F'|' -v row="$num" -v prio="$new_prio" -v status="$current_status" -v desc="$new_desc" '
     BEGIN { OFS="|" }
@@ -173,12 +129,103 @@ edit_task() {
     sort -t'|' -k2,2n -k1,1n "$TEMP_FILE" -o "$TASK_FILE"
 }
 
-# --- Settings Functions ---
+delete_all_tasks() {
+    > "$TASK_FILE"
+}
+
+delete_completed_tasks() {
+    sed -i '/|1|/d' "$TASK_FILE"
+    normalize_pending_priorities
+}
+
+# --- Interactive Wrappers & Interactivity Functions ---
+
+add_task_interactive() {
+    read -rp "Enter new task description: " desc
+    if [[ -z "$desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
+
+    created_date=$(date +"@%a, %-d-%b-%y")
+    desc="$desc $created_date"
+
+    read -rp "Enter priority (number): " prio
+    if [[ -z "$prio" ]]; then
+        last_incomplete_prio=$(awk -F'|' '$2 == 0 {prio=$1} END {print prio}' "$TASK_FILE")
+        if [[ -z "$last_incomplete_prio" ]]; then
+            prio=1
+        else
+            prio=$((last_incomplete_prio + 1))
+        fi
+    elif ! [[ "$prio" =~ ^[0-9]+$ ]]; then
+        echo "Priority must be a number."
+        sleep 1
+        return
+    fi
+
+    local choice=""
+    local conflict_line
+    conflict_line=$(grep "^${prio}|" "$TASK_FILE")
+
+    if [[ -n "$conflict_line" ]]; then
+        conflict_desc=$(echo "$conflict_line" | cut -d'|' -f3)
+        read -rp "Task '$conflict_desc' has priority $prio. Make '$desc' more prior? (y/n) " choice
+    fi
+
+    add_task "$desc" "$prio" "$choice"
+}
+
+delete_task_interactive() {
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to delete: " num
+    fi
+    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
+    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
+    delete_task "$num"
+}
+
+toggle_status_interactive() {
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to toggle complete/pending: " num
+    fi
+    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
+    if [[ -z "$(sed -n "${num}p" "$TASK_FILE")" ]]; then echo "Task number not found."; sleep 1; return; fi
+    toggle_status "$num"
+}
+
+edit_task_interactive() {
+    local num="${1:-}"
+    if [[ -z "$num" ]]; then
+        read -rp "Enter task number to edit: " num
+    fi
+    if ! [[ "$num" =~ ^[0-9]+$ ]] || [[ "$num" -eq 0 ]]; then echo "Invalid number."; sleep 1; return; fi
+
+    local line_to_edit
+    line_to_edit=$(sed -n "${num}p" "$TASK_FILE")
+    if [[ -z "$line_to_edit" ]]; then echo "Task number not found."; sleep 1; return; fi
+
+    local current_prio current_status current_desc
+    current_prio=$(echo "$line_to_edit" | cut -d'|' -f1)
+    current_status=$(echo "$line_to_edit" | cut -d'|' -f2)
+    current_desc=$(echo "$line_to_edit" | cut -d'|' -f3-)
+
+    local new_desc
+    read -rp "Enter new description [$current_desc]: " new_desc
+    new_desc="${new_desc:-$current_desc}"
+    if [[ -z "$new_desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
+
+    local new_prio
+    read -rp "Enter new priority [$current_prio]: " new_prio
+    new_prio="${new_prio:-$current_prio}"
+    if ! [[ "$new_prio" =~ ^[0-9]+$ ]]; then echo "Priority must be a number."; sleep 1; return; fi
+
+    edit_task "$num" "$new_prio" "$new_desc" "$current_status"
+}
 
 delete_all_tasks_now() {
     read -rp "Are you sure you want to delete ALL tasks? This cannot be undone. (y/n) " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
-        > "$TASK_FILE"
+        delete_all_tasks
         echo "All tasks deleted."
     else
         echo "Operation cancelled."
@@ -189,8 +236,7 @@ delete_all_tasks_now() {
 delete_completed_tasks_now() {
     read -rp "Are you sure you want to delete all COMPLETED tasks? (y/n) " choice
     if [[ "$choice" =~ ^[Yy]$ ]]; then
-        sed -i '/|1|/d' "$TASK_FILE"
-        normalize_pending_priorities
+        delete_completed_tasks
         echo "Completed tasks deleted."
     else
         echo "Operation cancelled."
@@ -327,13 +373,13 @@ while true; do
     action="$choice"
 
     case "$action" in
-        a|A) add_task ;;
+        a|A) add_task_interactive ;;
         e|E)
             if [[ -n "$task_num" && ! "$task_num" =~ ^[0-9]+$ ]]; then
                 echo "Invalid task number."
                 sleep 1
             else
-                edit_task "$task_num"
+                edit_task_interactive "$task_num"
             fi
             ;;
         d|D)
@@ -341,7 +387,7 @@ while true; do
                 echo "Invalid task number."
                 sleep 1
             else
-                delete_task "$task_num"
+                delete_task_interactive "$task_num"
             fi
             ;;
         t|T)
@@ -349,7 +395,7 @@ while true; do
                 echo "Invalid task number."
                 sleep 1
             else
-                toggle_status "$task_num"
+                toggle_status_interactive "$task_num"
             fi
             ;;
         s|S)
