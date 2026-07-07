@@ -65,6 +65,9 @@ add_task() {
     read -rp "Enter new task description: " desc
     if [[ -z "$desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
 
+    created_date=$(date +"@%a, %-d-%b-%y")
+    desc="$desc $created_date"
+
     read -rp "Enter priority (number): " prio
     if [[ -z "$prio" ]]; then
         last_incomplete_prio=$(awk -F'|' '$2 == 0 {prio=$1} END {print prio}' "$TASK_FILE")
