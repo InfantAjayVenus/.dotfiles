@@ -66,7 +66,18 @@ add_task() {
     if [[ -z "$desc" ]]; then echo "Description cannot be empty."; sleep 1; return; fi
 
     read -rp "Enter priority (number): " prio
-    if ! [[ "$prio" =~ ^[0-9]+$ ]]; then echo "Priority must be a number."; sleep 1; return; fi
+    if [[ -z "$prio" ]]; then
+        last_incomplete_prio=$(awk -F'|' '$2 == 0 {prio=$1} END {print prio}' "$TASK_FILE")
+        if [[ -z "$last_incomplete_prio" ]]; then
+            prio=1
+        else
+            prio=$((last_incomplete_prio + 1))
+        fi
+    elif ! [[ "$prio" =~ ^[0-9]+$ ]]; then
+        echo "Priority must be a number."
+        sleep 1
+        return
+    fi
 
     conflict_line=$(grep "^${prio}|" "$TASK_FILE")
 
