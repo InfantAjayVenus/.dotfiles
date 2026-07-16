@@ -33,3 +33,4 @@ export ANDROID_HOME="/home/ajay/Android/Sdk/"
 export CHROME_EXECUTABLE="/usr/bin/helium-browser"
 alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dlg="lazygit --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+export TASKS_FILE_PATH="$HOME/SharedSpace/tasks.txt"
