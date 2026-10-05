@@ -7,6 +7,10 @@ alsa-utils
 android-sdk-cmdline-tools-latest
 android-studio
 android-tools
+antigravity
+antigravity-cli
+antigravity-ide
+archlinux-xdg-menu
 awesome-terminal-fonts
 base
 base-devel
@@ -41,6 +45,7 @@ cachyos-wallpapers
 cachyos-zsh-config
 cantarell-fonts
 chwd
+clipgrab
 cliphist
 cpupower
 cryptsetup
@@ -90,11 +95,11 @@ gst-plugins-ugly
 gum
 hdparm
 helium-browser-bin
-heroic-games-launcher-bin
 hwdetect
 hwinfo
 hypridle
 hyprland
+hyprlang2lua
 hyprlauncher
 hyprlock
 hyprpaper
@@ -109,6 +114,7 @@ iptables
 iwd
 jdk-openjdk
 jfsutils
+kdeconnect
 kitty
 kvantum
 kvantum-qt5
@@ -185,6 +191,8 @@ pipewire-pulse
 pkgfile
 plasma-browser-integration
 playerctl
+playwright
+playwright-mcp
 plocate
 plymouth
 pnpm
@@ -196,6 +204,8 @@ pv
 python
 python-defusedxml
 python-packaging
+python-pip
+python-pipx
 python-weasyprint
 qbittorrent
 qdirstat-bin
@@ -221,11 +231,13 @@ sof-firmware
 starship
 steam
 sudo
+syncthing
 sysfsutils
 telegram-desktop
 texinfo
 tlp
 tlpui
+tmplayer
 trash-cli
 tree-sitter-cli
 try
@@ -268,7 +280,6 @@ wl-clipboard
 wlctl-git
 wlogout
 wofi
-workstyle-git
 wpa_supplicant
 xdg-desktop-portal-hyprland
 xdg-user-dirs
